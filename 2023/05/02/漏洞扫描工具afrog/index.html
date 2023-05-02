@@ -1,0 +1,650 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="lhacker">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="自动化工具afrog写在前面此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。工具简介aforg 是一款用于漏洞扫描的工具，自身集成了很多的POC，扫描速度快，开发更新速度也很给力。同时利用此工具的师傅编写了很多的POC每天都在更新，朝气蓬勃。蛙哥是一个不折不扣的好青年。给他点赞！ 希望大家多给他点个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="漏洞扫描工具afrog">
+<meta property="og:url" content="http://shelldir.cn/2023/05/02/%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F%E5%B7%A5%E5%85%B7afrog/index.html">
+<meta property="og:site_name" content="努力奋斗的小伙子">
+<meta property="og:description" content="自动化工具afrog写在前面此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。工具简介aforg 是一款用于漏洞扫描的工具，自身集成了很多的POC，扫描速度快，开发更新速度也很给力。同时利用此工具的师傅编写了很多的POC每天都在更新，朝气蓬勃。蛙哥是一个不折不扣的好青年。给他点赞！ 希望大家多给他点个">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-05-02T12:21:09.000Z">
+<meta property="article:modified_time" content="2023-05-02T13:39:18.524Z">
+<meta property="article:author" content="lhacker">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="扫描">
+<meta property="article:tag" content="自动化">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>漏洞扫描工具afrog - 努力奋斗的小伙子</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"shelldir.cn","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>China</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>主页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>类别</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>介绍</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="漏洞扫描工具afrog"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-02 12:21" pubdate>
+          May 2, 2023 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.1k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">漏洞扫描工具afrog</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="自动化工具afrog"><a href="#自动化工具afrog" class="headerlink" title="自动化工具afrog"></a><center>自动化工具afrog</h1><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><h2 id="此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。"><a href="#此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。" class="headerlink" title="此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。"></a>此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。</h2><h2 id="工具简介"><a href="#工具简介" class="headerlink" title="工具简介"></a>工具简介</h2><h3 id="aforg-是一款用于漏洞扫描的工具，自身集成了很多的POC，扫描速度快，开发更新速度也很给力。同时利用此工具的师傅编写了很多的POC每天都在更新，朝气蓬勃。蛙哥是一个不折不扣的好青年。给他点赞！-希望大家多给他点个Star-这里是他的地址"><a href="#aforg-是一款用于漏洞扫描的工具，自身集成了很多的POC，扫描速度快，开发更新速度也很给力。同时利用此工具的师傅编写了很多的POC每天都在更新，朝气蓬勃。蛙哥是一个不折不扣的好青年。给他点赞！-希望大家多给他点个Star-这里是他的地址" class="headerlink" title="aforg 是一款用于漏洞扫描的工具，自身集成了很多的POC，扫描速度快，开发更新速度也很给力。同时利用此工具的师傅编写了很多的POC每天都在更新，朝气蓬勃。蛙哥是一个不折不扣的好青年。给他点赞！ 希望大家多给他点个Star 这里是他的地址"></a>aforg 是一款用于漏洞扫描的工具，自身集成了很多的POC，扫描速度快，开发更新速度也很给力。同时利用此工具的师傅编写了很多的POC每天都在更新，朝气蓬勃。蛙哥是一个不折不扣的好青年。给他点赞！ 希望大家多给他点个Star <a target="_blank" rel="noopener" href="https://github.com/zan8in/afrog">这里是他的地址</a></h3><h2 id="工具用法"><a href="#工具用法" class="headerlink" title="工具用法"></a>工具用法</h2><h3 id="下载工具之后"><a href="#下载工具之后" class="headerlink" title="下载工具之后"></a>下载工具之后</h3><ol>
+<li>先用aforg -up命令更新一次POC </li>
+<li>在查看文件中的config文件更改ceye回显示 如果没有请注册一个<a target="_blank" rel="noopener" href="https://ceye.com/">ceye</a></li>
+<li>现在就可以使用afrog 进行漏洞扫描了</li>
+<li>扫描单个地址 用法 afrog -t  Url</li>
+<li>扫描多个地址 用法 afrog-T Url.txt</li>
+<li>具体详细可以看他的git</li>
+</ol>
+<h2 id="POC编写"><a href="#POC编写" class="headerlink" title="POC编写"></a>POC编写</h2><h3 id="肯定各位师傅是有自己的漏洞库，没有公开的0day-他也可以自定义漏洞编写进行扫描"><a href="#肯定各位师傅是有自己的漏洞库，没有公开的0day-他也可以自定义漏洞编写进行扫描" class="headerlink" title="肯定各位师傅是有自己的漏洞库，没有公开的0day 他也可以自定义漏洞编写进行扫描"></a>肯定各位师傅是有自己的漏洞库，没有公开的0day 他也可以自定义漏洞编写进行扫描</h3><h4 id="id"><a href="#id" class="headerlink" title="id"></a>id</h4><p>[公司]产品-漏洞名称|CVE&#x2F;CNVD-2021-XXXX</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs qml"><span class="hljs-attribute">id:</span><span class="hljs-string"> CVE</span><span class="hljs-number">-2022</span><span class="hljs-number">-0202</span>  <span class="hljs-comment">// good</span><br><span class="hljs-attribute">id:</span><span class="hljs-string"> seeyon</span>-ajax-unauth  <span class="hljs-comment">// good</span><br><span class="hljs-attribute">id:</span><span class="hljs-string"> zhiyuan</span>-oa-unauth   <span class="hljs-comment">// bad</span><br></code></pre></td></tr></table></figure>
+<h4 id="info"><a href="#info" class="headerlink" title="info"></a>info</h4><p>包含 name、author、severity、description、reference</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs awk">id: CVE-<span class="hljs-number">2022</span>-<span class="hljs-number">22947</span><br>info:<br>  name: Spring Cloud Gateway Code Injection<br>  author: alex<br>  severity: critical<br>  description: |<br>    Spring Cloud Gateway 远程代码执行漏洞（CVE-<span class="hljs-number">2022</span>-<span class="hljs-number">22947</span>）发生在Spring Cloud Gateway...<br>    影响版本：Spring Cloud Gateway <span class="hljs-number">3.1</span>.x &lt; <span class="hljs-number">3.1</span>.<span class="hljs-number">1</span> 、Spring Cloud Gateway &lt; <span class="hljs-number">3.0</span>.<span class="hljs-number">7</span><br>    官方已发布安全版本，请及时下载更新，下载地址：https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/spring-cloud/</span>spring-cloud-gateway<br>    FOFA：app=<span class="hljs-string">&quot;vmware-SpringBoot-framework&quot;</span><br>  reference:<br>    - https:<span class="hljs-regexp">//m</span>p.weixin.qq.com<span class="hljs-regexp">/s/</span>qIAcycsO_L9JKisG5Bgg_w	 <span class="hljs-regexp">//</span> 必须是列表（数组）形式<br></code></pre></td></tr></table></figure>
+
+<p>name：漏洞名称，尽量英文且官方用语<br>author：大佬名称<br>severity: 漏洞等级，分为critical、high、mideum、low、info，请参考 [National Vulnerability Database]<br>description: （可选填）包含 漏洞描述、漏洞影响、网络测绘、修复建议 等<br>reference: （可选填）参考链接，必须数组形式，否则 poc 无法验证</p>
+<h4 id="rules"><a href="#rules" class="headerlink" title="rules"></a>rules</h4><figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">rules:<br>  r0:<br>    request:<br>      <span class="hljs-keyword">method</span>: GET<br>      path: /phpinfo.php<br>    expression: response.status == <span class="hljs-number">200</span> &amp;&amp; response.body.bcontains(b<span class="hljs-string">&#x27;PHP Version&#x27;</span>)<br>    stop_if_match: <span class="hljs-keyword">true</span><br>  r1:<br>    before_sleep: <span class="hljs-number">6</span><br>    request:<br>      <span class="hljs-keyword">method</span>: GET<br>      path: /info.php<br>    expression: response.status == <span class="hljs-number">200</span> &amp;&amp; response.body.bcontains(b<span class="hljs-string">&#x27;PHP Version&#x27;</span>)<br>    stop_if_mismatch: <span class="hljs-keyword">true</span><br>expression: r0() || r1()<br></code></pre></td></tr></table></figure>
+<p>rules：定义规则组</br><br>r0 &#x2F; r1 : 子规则，自定义名称，不能重复</br><br>request: 表示 http request 请求</br><br>method: 表示 http request method 方法</br><br>path: 表示 http request URL 请求的 PATH</br><br>expression：子规则的验证表达式，用于验证 r0 或 r1 是否匹配规则。比如：response.status &#x3D;&#x3D; 200 &amp;&amp; response.body.bcontains(b’PHP Version’)表示 request 请求返回状态码必须是 200 且 源码必须含有 PHP Version 关键字</br><br>stop_if_match: 如果匹配就停止</br><br>stop_if_mismatch：如果不匹配就停止</br><br>before_sleep: 顾名思义，http 请求前 sleep 6 秒钟</br><br>expression: 最外面的 expression 是 rules 的验证表达式，r0() || r1() 表示 r0 和 r1 两个规则，匹配一个表达式就为 true，代表漏洞存在。</br></p>
+<blockquote>
+<p>如果 rules 表达式都是 ||关系，比如：r0() || r1() || r2() … ，默认执行 stop_if_match 动作。同理，如果表达式都是 &amp;&amp; 关系，默认执行 stop_if_mismatch 动作。</p>
+</blockquote>
+<h4 id="raw-http"><a href="#raw-http" class="headerlink" title="raw http"></a>raw http</h4><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">set</span>:<br>  <span class="hljs-attribute">hostname</span>: request.url.host<br><span class="hljs-attribute">rules</span>:<br>  <span class="hljs-attribute">r0</span>:<br>    <span class="hljs-attribute">request</span>:<br>      <span class="hljs-attribute">raw</span>: |<br>        <span class="hljs-attribute">GET</span> .//WEB-INF/web.xml HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br>        <span class="hljs-attribute">Host</span>: &#123;&#123;hostname&#125;&#125;<br>        <span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (Windows NT <span class="hljs-number">10</span>.<span class="hljs-number">0</span>; Win64; x64; rv:<span class="hljs-number">99</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">99</span>.<span class="hljs-number">0</span><br>    <span class="hljs-attribute">expression</span>: response.status == <span class="hljs-number">200</span> &amp;&amp; response.body.bcontains(b&#x27;&lt;web-app&#x27;) &amp;&amp; response.body.bcontains(b&#x27;&lt;/web-app&gt;&#x27;) &amp;&amp; (response.raw_header.bcontains(b&#x27;application/xml&#x27;) || response.raw_header.bcontains(b&#x27;text/xml&#x27;))<br>  <span class="hljs-attribute">r1</span>:<br>    <span class="hljs-attribute">request</span>:<br>      <span class="hljs-attribute">raw</span>: |<br>        <span class="hljs-attribute">GET</span> .//WEB-INF/weblogic.xml HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br>        <span class="hljs-attribute">Host</span>: &#123;&#123;hostname&#125;&#125;<br>        <span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (Windows NT <span class="hljs-number">10</span>.<span class="hljs-number">0</span>; Win64; x64; rv:<span class="hljs-number">99</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">99</span>.<span class="hljs-number">0</span><br>    <span class="hljs-attribute">expression</span>: response.status == <span class="hljs-number">200</span> &amp;&amp; response.body.bcontains(b&#x27;&lt;weblogic-web-app&#x27;) &amp;&amp; response.body.bcontains(b&#x27;&lt;/weblogic-web-app&gt;&#x27;) &amp;&amp; (response.raw_header.bcontains(b&#x27;application/xml&#x27;) || response.raw_header.bcontains(b&#x27;text/xml&#x27;))<br><span class="hljs-attribute">expression</span>: r0() || r1()<br></code></pre></td></tr></table></figure>
+<p>raw: 顾名思义，支持原生 http 请求</p>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>如果还是不会可以加他的微信:zhanbin168</p>
+<h1 id="再见！"><a href="#再见！" class="headerlink" title="再见！"></a>再见！</h1>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%B7%A5%E5%85%B7/" class="category-chain-item">工具</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E5%85%B7/">#工具</a>
+      
+        <a href="/tags/%E6%89%AB%E6%8F%8F/">#扫描</a>
+      
+        <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/">#自动化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>漏洞扫描工具afrog</div>
+      <div>http://shelldir.cn/2023/05/02/漏洞扫描工具afrog/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>lhacker</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>May 2, 2023</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="http://www.shelldir.cn" target="_blank" rel="nofollow noopener"><span>主页</span></a> <i class="iconfont icon-love"></i> <a href="https://dbuglhacker.github.io/" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
