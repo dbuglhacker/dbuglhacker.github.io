@@ -1,0 +1,675 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="lhacker">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="dirb(命令行)模式详解写在前面此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。dirb简介dirb是一个基于字典的web目录扫描工具，查找现有的（和&#x2F;或隐藏的）Web对象，通过对Web服务器发起基于字典的攻击并分析响应的数据。 采用递归的方式来获取更多的目录，它还支持代理和http认">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dirb扫描工具">
+<meta property="og:url" content="http://shelldir.cn/2023/05/11/dirb%E6%89%AB%E6%8F%8F%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:site_name" content="努力奋斗的小伙子">
+<meta property="og:description" content="dirb(命令行)模式详解写在前面此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。dirb简介dirb是一个基于字典的web目录扫描工具，查找现有的（和&#x2F;或隐藏的）Web对象，通过对Web服务器发起基于字典的攻击并分析响应的数据。 采用递归的方式来获取更多的目录，它还支持代理和http认">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-05-11T11:25:00.000Z">
+<meta property="article:modified_time" content="2023-05-11T11:27:34.360Z">
+<meta property="article:author" content="lhacker">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="扫描">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>dirb扫描工具 - 努力奋斗的小伙子</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"shelldir.cn","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>China</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>主页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>类别</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>介绍</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="dirb扫描工具"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-11 11:25" pubdate>
+          May 11, 2023 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">dirb扫描工具</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="dirb-命令行-模式详解"><a href="#dirb-命令行-模式详解" class="headerlink" title=" dirb(命令行)模式详解"></a><center> dirb(命令行)模式详解</h1><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><h2 id="此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。"><a href="#此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。" class="headerlink" title="此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。"></a>此文章用于提高网络安全，漏洞复现用于漏洞自查。在此学习到的所有知识请用于正规合法途径切莫以身试法，不要对没有授权的网站或者系统进行扫描，入侵，攻击。</h2><h1 id=""><a href="#" class="headerlink" title=""></a></h1><h1 id="dirb简介"><a href="#dirb简介" class="headerlink" title="dirb简介"></a>dirb简介</h1><p>dirb是一个基于字典的web目录扫描工具，查找现有的（和&#x2F;或隐藏的）Web对象，通过对Web服务器发起基于字典的攻击并分析响应的数据。 采用递归的方式来获取更多的目录，它还支持代理和http认证限制访问的网站，是在信息收集阶段获取目标信息常用工具手段。<br>DirBuster支持全部的Web目录扫描方式。它既支持网页爬虫方式扫描，也支持基于字典暴力扫描，还支持纯暴力扫描。该工具使用Java语言编写，提供命令行（Headless）和图形界面（GUI）两种模式。其中，图形界面模式功能更为强大。用户不仅可以指定纯暴力扫描的字符规则，还可以设置以URL模糊方式构建网页路径。同时，用户还对网页解析方式进行各种定制，提高网址解析效率。<br>#</p>
+<h1 id="dirb使用"><a href="#dirb使用" class="headerlink" title="dirb使用"></a>dirb使用</h1><h2 id="1、语法格式"><a href="#1、语法格式" class="headerlink" title="1、语法格式"></a>1、语法格式</h2><blockquote>
+<p>dirb <url_base> [&lt;wordlist_file(s)&gt;] [options]</p>
+</blockquote>
+<h2 id="2、命令参数"><a href="#2、命令参数" class="headerlink" title="2、命令参数"></a>2、命令参数</h2><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs diff"><span class="hljs-deletion">-a &lt;agent_string&gt;：					指定您的定制USER_AGENT。</span><br><span class="hljs-deletion">-c &lt;cookie_string&gt;：					为HTTP请求设置cookie。</span><br><span class="hljs-deletion">-f：									精细调整NOT_FOUND（404）检测。</span><br><span class="hljs-deletion">-H &lt;header_string&gt;：					将自定义标头添加到HTTP请求。</span><br><span class="hljs-deletion">-i：									使用不区分大小写的搜索。</span><br><span class="hljs-deletion">-l：									找到时打印“ Location”标题。</span><br><span class="hljs-deletion">-N &lt;nf_code&gt;：						忽略此HTTP代码的响应。</span><br><span class="hljs-deletion">-o &lt;输出文件&gt;：						将输出保存到磁盘。</span><br><span class="hljs-deletion">-p &lt;代理[：端口]&gt;：					使用此代理。（默认端口为1080）</span><br><span class="hljs-deletion">-P &lt;proxy_username：proxy_password&gt;：	代理身份验证。</span><br><span class="hljs-deletion">-r：									不要递归搜索。</span><br><span class="hljs-deletion">-R：									交互式递归。（询问每个目录）</span><br><span class="hljs-deletion">-S：									静默模式。不要显示经过测试的单词。（用于哑终端）</span><br><span class="hljs-deletion">-t：									不要在网址上强制使用结尾的“ /”。</span><br><span class="hljs-deletion">-u &lt;用户名：密码&gt;：					HTTP身份验证。</span><br><span class="hljs-deletion">-v：									也显示NOT_FOUND页。</span><br><span class="hljs-deletion">-w：								不要在警告消息上停止。</span><br><span class="hljs-deletion">-X &lt;扩展名&gt; / -x &lt;扩展名文件&gt;：			在每个单词后加上该扩展名。</span><br><span class="hljs-deletion">-z：									添加毫秒延迟，以免导致过多的Flood。</span><br><br></code></pre></td></tr></table></figure>
+<h2 id="3、常见用法"><a href="#3、常见用法" class="headerlink" title="3、常见用法"></a>3、常见用法</h2><h3 id="1、对目标进行基本的扫描"><a href="#1、对目标进行基本的扫描" class="headerlink" title="1、对目标进行基本的扫描"></a>1、对目标进行基本的扫描</h3><h4 id="1、使用默认字典"><a href="#1、使用默认字典" class="headerlink" title="1、使用默认字典"></a>1、使用默认字典</h4><blockquote>
+<p>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1/</a>  		#<a href="http://1127.0.0.1/">http://1127.0.0.1/</a> 为目标地址</p>
+</blockquote>
+<h4 id="2、指定字典"><a href="#2、指定字典" class="headerlink" title="2、指定字典"></a>2、指定字典</h4><blockquote>
+<p>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1/</a> &#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;big.txt </p>
+</blockquote>
+<h3 id="2、查看存在的字典"><a href="#2、查看存在的字典" class="headerlink" title="2、查看存在的字典"></a>2、查看存在的字典</h3><h4 id="1、查看所有字典"><a href="#1、查看所有字典" class="headerlink" title="1、查看所有字典"></a>1、查看所有字典</h4><blockquote>
+<p>&#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists 具体查看自己的dirb安装目录</p>
+</blockquote>
+<h4 id="2、Dirb的默认字典：common-txt"><a href="#2、Dirb的默认字典：common-txt" class="headerlink" title="2、Dirb的默认字典：common.txt"></a>2、Dirb的默认字典：common.txt</h4><blockquote>
+<p>&#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;common.txt</p>
+</blockquote>
+<h4 id="3、扫描存在特点扩展名列表的目录"><a href="#3、扫描存在特点扩展名列表的目录" class="headerlink" title="3、扫描存在特点扩展名列表的目录"></a>3、扫描存在特点扩展名列表的目录</h4><p>在很多情况下，我们需要在目标服务器上提取特定扩展名的目录，然后可以使用dirb扫描的-X参数。此参数接受文件扩展名，然后在目标服务器或计算机上搜索给定的扩展名文件。</p>
+<blockquote>
+<p>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1/</a> -X .txt 		#127.0.0.1为目标地址，.txt为我们需要搜索的指定扩展名文件</p>
+</blockquote>
+<h4 id="4、将产出保存到特定文件"><a href="#4、将产出保存到特定文件" class="headerlink" title="4、将产出保存到特定文件"></a>4、将产出保存到特定文件</h4><blockquote>
+<p>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1/</a> -o output.txt		 #127.0.0.1为目标地址， output.txt为将输出保存的文件名</p>
+</blockquote>
+<h4 id="5、指定状态码不输出"><a href="#5、指定状态码不输出" class="headerlink" title="5、指定状态码不输出"></a>5、指定状态码不输出</h4><blockquote>
+<p>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1/</a> -N 200 		#127.0.0.1为目标地址，200为我们忽略的状态码</p>
+</blockquote>
+<p>忽略了他就不会产出<br>从前面的工作我们知道是有产出这里，是没有产出的，也就是说前面的产出状态码全部是200的</p>
+<h4 id="6、设置速度延迟"><a href="#6、设置速度延迟" class="headerlink" title="6、设置速度延迟"></a>6、设置速度延迟</h4><blockquote>
+<p>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1/</a> -z 100  		#127.0.0.1为目标地址，100为我们给定的扫描延迟</p>
+</blockquote>
+<h4 id="7、取消递归扫描"><a href="#7、取消递归扫描" class="headerlink" title="7、取消递归扫描"></a>7、取消递归扫描</h4><p>默认情况下，dirb扫描以递归方式扫描目录。它将扫描目录，然后遍历该目录以扫描更多子目录。但是在某些情况下，如果时间不足，我们会将Dirb设置为不递归扫描。<br>1、-r不递归<br>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/public/">http://127.0.0.1/public/</a> -r		 #127.0.0.1为目标地址</p>
+<h4 id="8、显示不存在页面"><a href="#8、显示不存在页面" class="headerlink" title="8、显示不存在页面"></a>8、显示不存在页面</h4><blockquote>
+<p>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.0.0.1</a> -v 		#127.0.0.1为目标地址</p>
+</blockquote>
+<p>404的都进行了显示，也就是整个字典都会被显示出来</p>
+<h4 id="9、HTTP授权进行扫描"><a href="#9、HTTP授权进行扫描" class="headerlink" title="9、HTTP授权进行扫描"></a>9、HTTP授权进行扫描</h4><blockquote>
+<p>dirb <a target="_blank" rel="noopener" href="http://127.0.0.1/admin">http://127.0.0.1/admin</a> -u user:passwd		#127.0.0.1为目标地址，</p>
+</blockquote>
+<p>user:passwd为用户名和密码</p>
+<h4 id="10、代理网址"><a href="#10、代理网址" class="headerlink" title="10、代理网址"></a>10、代理网址</h4><p>使用–p选项可将代理URL用于所有请求，默认情况下，它可在端口1080上使用</p>
+<blockquote>
+<p>dirb 127.0.0.1&#x2F; &#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;big.txt –p 127.0.0.1:8080   #127.0.0.01为目标地址，&#x2F;usr&#x2F;share&#x2F;dirb&#x2F;wordlists&#x2F;big.txt为指定字典，127.0.0.1:8080为我们设置的代理地址以及端口<br>#</p>
+</blockquote>
+<h1 id="完结"><a href="#完结" class="headerlink" title="完结"></a>完结</h1>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%B7%A5%E5%85%B7/" class="category-chain-item">工具</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E5%85%B7/">#工具</a>
+      
+        <a href="/tags/%E6%89%AB%E6%8F%8F/">#扫描</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>dirb扫描工具</div>
+      <div>http://shelldir.cn/2023/05/11/dirb扫描工具/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>lhacker</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>May 11, 2023</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/10/thinkphp-lang-rce/" title="thinkphp lang 命令执行">
+                        <span class="hidden-mobile">thinkphp lang 命令执行</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="http://www.shelldir.cn" target="_blank" rel="nofollow noopener"><span>主页</span></a> <i class="iconfont icon-love"></i> <a href="https://dbuglhacker.github.io/" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
